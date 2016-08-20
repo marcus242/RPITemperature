@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="RPI-Temperature:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="RPI-Temperature-1.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="RPI-Temperature:war exploded" />
+    </root>
+  </artifact>
+</component>
