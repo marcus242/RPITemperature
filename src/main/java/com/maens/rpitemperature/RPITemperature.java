@@ -9,21 +9,29 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import java.util.*;
 
 
 public class RPITemperature {
     public static void main(String[] args){
 
         final RPITemperature rpit = new RPITemperature();
-        rpit.test();
+        rpit.fetchDataByDate();
+        //rpit.testInsert();
 
     }
-    private void test(){
+    private void fetchDataByDate(){
+        final Date dateNow = new Date();
+        final Gson gson = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd HH:mm:ss").create();
+        final TemperatureDAOimpl temperatureDAO = new TemperatureDAOimpl();
+        List<EntityTemperatureData> x = temperatureDAO.getTempByDate(dateNow);
+        final String data = gson.toJson(x);
+
+    }
+    private void testInsert(){
         final String sampleData = "{'timestamp': '2016-09-10 16:56:01','location': 'Pi one', 'temperature': '25.312'}";
         try {
-
             //Small test to try to create an Entity from a sample JSON data via GSON and then persist it.
             System.out.println(sampleData);
             final Gson gson = new GsonBuilder()
@@ -48,9 +56,5 @@ public class RPITemperature {
         }catch (Exception err){
             System.out.println("Error: "+ err.toString());
         }
-
-
-
-
     }
 }

@@ -2,26 +2,52 @@ package com.maens.rpitemperature;
 
 import com.maens.rpitemperature.entities.EntityTemperatureData;
 
-import com.mysql.jdbc.Driver;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
+
 
 
 class TemperatureDAOimpl implements TemperatureDAO {
-
+    TemperatureDAOimpl(){
+        try{
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        }catch(ClassNotFoundException cnf){
+            System.out.println("Class not found exception"+cnf.toString());
+        }
+    }
     public List<EntityTemperatureData> getTempByDate(Date date) {
-        ArrayList<EntityTemperatureData> data = new ArrayList<EntityTemperatureData>();
-        return data;
+        try {
+
+            final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("mysql-db");
+            final EntityManager entityManager = entityManagerFactory.createEntityManager();
+            final String queryString = "FROM EntityTemperatureData where timestamp < :ltdate and timestamp > :gtdate";
+            final Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            cal.add(Calendar.DATE,1);
+            final Date ltDate = cal.getTime();
+
+            final Query query = entityManager.createQuery(queryString);
+            query.setParameter("gtdate",date);
+            query.setParameter("ltdate",ltDate);
+
+            final List result = query.getResultList();
+            entityManager.close();
+            entityManagerFactory.close();
+
+            return result;
+        }catch(Exception err ){
+            return null;
+        }
     }
 
     public List<EntityTemperatureData> getTempByMonth(int month) {
@@ -31,8 +57,6 @@ class TemperatureDAOimpl implements TemperatureDAO {
 
     public void addTemperatureData(EntityTemperatureData temperatureData) {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-
             final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("mysql-db");
             final EntityManager entityManager = entityManagerFactory.createEntityManager();
 
